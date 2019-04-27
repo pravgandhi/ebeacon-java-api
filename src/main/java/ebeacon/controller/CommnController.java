@@ -2,6 +2,8 @@ package ebeacon.controller;
 
 
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,14 +24,17 @@ public class CommnController {
 	@Autowired
 	CommnService commnService;
 	
-	@RequestMapping(value = "/sendCommunication", method = RequestMethod.POST)
-	public String sendCommunication(@RequestBody String message)
+	//@RequestMapping(value = "/sendCommunication", method = RequestMethod.POST)
+	@RequestMapping("/sendCommunication")
+	//public String sendCommunication(@RequestBody String message)
+	public String sendCommunication()
 	{
 		System.out.println("BEFORE SENDING COMMUNICATION");
 		
 		try {
 			
-			commnService.sendCommunication(message);
+			//commnService.sendCommunication(message);
+			commnService.sendCommunication("Test Message");
 		}
 		catch(Exception e)
 		{
@@ -42,6 +47,13 @@ public class CommnController {
 		return "success";
 	}
 	
+	
+	 @RequestMapping(path = "/processSMS", method = RequestMethod.POST)
+	 public void saveFilter(@RequestBody Map<String, String> request) { 
+		 for( String key :request.keySet()) {
+			 System.out.println(request.get(key)) ;
+		 }		 
+	 }
 		
 	/*@RequestMapping("/sendYammer")
 	public String sendYammer()

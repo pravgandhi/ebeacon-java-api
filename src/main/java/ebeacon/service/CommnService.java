@@ -12,6 +12,11 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.springframework.social.yammer.api.MessageInfo;
+import org.springframework.social.yammer.api.Yammer;
+import org.springframework.social.yammer.api.YammerProfile;
+import org.springframework.social.yammer.api.impl.YammerPostDetails;
+import org.springframework.social.yammer.api.impl.YammerTemplate;
 import org.springframework.stereotype.Service;
 
 import com.twilio.Twilio;
@@ -38,7 +43,7 @@ public class CommnService {
 	public void sendCommunication(String message)
 	{
 		List<TargetUser> targetAudience= new ArrayList<TargetUser>();
-		targetAudience.add(new TargetUser("1","Sandiya",Arrays.asList("EMAIL")));
+		targetAudience.add(new TargetUser("1","Sandiya",Arrays.asList("EMAIL", "SMS", "sendYammer")));
 		
 		for (TargetUser targetUser : targetAudience)
 		{
@@ -51,8 +56,10 @@ public class CommnService {
 				case "EMAIL" :
 					sendEmail(targetUser.getUserName(), message);
 					break;
-				}
-				
+				case "sendYammer" :
+					sendYammer(targetUser.getUserName(), message, "pravgandhi@deloitte.com");
+					break; 
+				}	
 			}
 		}
 		
@@ -63,7 +70,8 @@ public class CommnService {
 		
 		System.out.println("BEFORE SENDSMS");
 		
-		 Message.creator(new PhoneNumber("+19528186680"), new PhoneNumber("+17634529666"),
+		 //Message.creator(new PhoneNumber("+19528186680"), new PhoneNumber("+17634529666"),
+				 Message.creator(new PhoneNumber("+13215780852"), new PhoneNumber("+17634529666"),
 		         "Hi "+userName+ ", "+message).create();
 		 
 		 System.out.println("AFTER SENDSMS");
@@ -94,7 +102,7 @@ public class CommnService {
 	            emailMessage.setFrom(new InternetAddress(emailUserName));
 	            emailMessage.setRecipients(
 	            		MimeMessage.RecipientType.TO,
-	                    InternetAddress.parse("ssundaramurthy@deloitte.com")
+	                    InternetAddress.parse("pravgandhi@deloitte.com")
 	            );
 	            emailMessage.setSubject("eBeacon");
 	            emailMessage.setText("Dear "+ userName +","
@@ -108,28 +116,22 @@ public class CommnService {
 	        } 
 	}
 	
-	/*@RequestMapping("/sendYammer")
-	public String sendYammer()
+	public String sendYammer(String userName, String message, String yammerEmail)
 	{
 		
 		System.out.println("BEFORE SENDYAMMER");
-		
-		Connection<Yammer> connection = new SocialConfig().connectionFactoryLocator();
-		if (connection != null) {
-		    Yammer yammer = connection.getApi();
-
-		    // ... use Yammer API binding
-		}
-		
-		
-		String accessToken = "304-ZAPanvbbZF35s4RgUUXjaw"; // access token received from Yammer after OAuth authorization
+			
+		String accessToken = "304-DNI89Sej4KmjPVvpJLMLGg"; // access token received from Yammer after OAuth authorization
 		Yammer yammer = new YammerTemplate(accessToken);
+				
+		YammerProfile profile = yammer.userOperations().getUserByEmail(yammerEmail);				 
+		YammerPostDetails details = new YammerPostDetails();
 		
-		YammerProfile profile = yammer.userOperations().getUserProfile();
+		details.setDirectToUserId(profile.getId());
 		
-		System.out.println("Name : "+profile.getName());
-		 
+		MessageInfo messageInfo = yammer.messageOperations().postUpdate("Hello !", details);
+				
 		 System.out.println("AFTER SENDYAMMER");
 		return "success";
-	}*/
+	}
 }
