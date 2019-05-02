@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @ComponentScan("ebeacon.controller")
 @ComponentScan("ebeacon.service")
+@ComponentScan("ebeacon.dao")
 @SpringBootApplication
 public class Application {
 
